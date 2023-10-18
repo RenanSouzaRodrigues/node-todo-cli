@@ -1,17 +1,24 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const { resolve } = require("path");
+const { resolve, dirname, join } = require("path");
 const { program } = require("commander");
 
-const content = fs.readFileSync("./database.json", "utf-8").toString();
-const database = JSON.parse(content);
+const getDB = () => {
+    const dir = dirname(require.main.filename);
+    const filePath = join(dir, "database.json");
+    const content = fs.readFileSync(filePath, "utf-8").toString();
+    return JSON.parse(content);
+}
+
+const database = getDB();
 
 const saveDB = (successMessage) => {
-    const absolutePath = resolve("./database.json");
+    const dir = dirname(require.main.filename);
+    const filePath = join(dir, "database.json");
     const data = JSON.stringify(database);
     try {
-        fs.writeFileSync(absolutePath, data);
+        fs.writeFileSync(filePath, data);
         console.info(successMessage);
     } catch (error) {
         console.error(error);
@@ -48,7 +55,7 @@ const updateTask = (index, completed) => {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() - 3);
     database.tasks[index].completed = completed;
-    database.tasks[index].completedAt = currentDate.toISOString();
+    database.tasks[index].completedAt = completed ? currentDate.toISOString() : "";
     saveDB("Task updated");
 }
 
