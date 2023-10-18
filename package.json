@@ -1,0 +1,13 @@
+{
+  "name": "todo",
+  "author": "Renan Souza Rodrigues <renan.souza@powerpush.com.br>",
+  "version": "1.0.0",
+  "main": "app.js",
+  "bin": {
+    "todo": "app.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0"
+  }
+}
