@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-var { tasks } = require("./db.json");
+const { resolve } = require("path");
 const { program } = require("commander");
 
+const content = fs.readFileSync("./database.json", "utf-8").toString();
+const database = JSON.parse(content);
+
 const saveDB = (successMessage) => {
-    const data = JSON.stringify({tasks: tasks});
-    fs.writeFile("db.json", data, (err) => {
-        if (err) throw err;
-        console.log(successMessage);
-    });
+    const absolutePath = resolve("./database.json");
+    const data = JSON.stringify(database);
+    try {
+        fs.writeFileSync(absolutePath, data);
+        console.info(successMessage);
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 const createTask = (taskName) => {
@@ -22,12 +28,12 @@ const createTask = (taskName) => {
         createdAt: currentDate.toISOString(), 
         completedAt: "" 
     }
-    tasks.push(newTask);
+    database.tasks.push(newTask);
     saveDB("New task created");
 } 
 
 const listTasks = () => {
-    const mappedTasks = tasks.map(task => {
+    const mappedTasks = database.tasks.map(task => {
         return {
             completed: task.completed ? "✅" : "❌",
             name: task.name,
@@ -41,18 +47,18 @@ const listTasks = () => {
 const updateTask = (index, completed) => {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() - 3);
-    tasks[index].completed = completed;
-    tasks[index].completedAt = currentDate.toISOString();
+    database.tasks[index].completed = completed;
+    database.tasks[index].completedAt = currentDate.toISOString();
     saveDB("Task updated");
 }
 
 const deleteTask = (index) => {
-    tasks.pop(index);
+    database.tasks.pop(index);
     saveDB("Task deleted");
 }
 
 const deleteAll = () => {
-    tasks = [];
+    database.tasks = [];
     saveDB("All tasks deleted");
 }
 
