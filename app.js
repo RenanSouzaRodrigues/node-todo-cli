@@ -25,12 +25,13 @@ const saveDB = (successMessage) => {
     }
 }
 
-const createTask = (taskName) => {
+const createTask = (taskName, category) => {
     const currentDate = new Date();
     currentDate.setHours(currentDate.getHours() - 3);
     const newTask = { 
         id: Date.now(), 
         name: taskName, 
+        category: !category ? "pessoal" : category,
         completed: false, 
         createdAt: currentDate.toISOString(), 
         completedAt: "" 
@@ -39,15 +40,28 @@ const createTask = (taskName) => {
     saveDB("New task created");
 } 
 
-const listTasks = () => {
-    const mappedTasks = database.tasks.map(task => {
+const listTasks = (category) => {
+    var filteredTasks = [];
+    if (category) {
+        database.tasks.forEach((task, index) => {
+            if (task.category == category) {
+                filteredTasks[index] = task;
+            }
+        });
+    } else {
+        filteredTasks = database.tasks;
+    }
+
+    const mappedTasks = filteredTasks.map(task => {
         return {
             completed: task.completed ? "✅" : "❌",
             name: task.name,
+            category: task.category ? task.category : "default",
             createdAt: task.createdAt.split("T")[0].split("-").reverse().join("/") + " " + task.createdAt.split("T")[1].split(".")[0],
             completedAt: task.completedAt ? task.completedAt.split("T")[0].split("-").reverse().join("/") + " " + task.completedAt.split("T")[1]?.split(".")[0] : ""
         }
     });
+
     console.table(mappedTasks);
 }
 
@@ -69,14 +83,14 @@ const deleteAll = () => {
     saveDB("All tasks deleted");
 }
 
-program.command("new [taskName]")
-    .action((taskName) => {
-        createTask(taskName);
+program.command("new [taskName] [category]")
+    .action((taskName, category) => {
+        createTask(taskName, category);
     });
 
-program.command("ls")
-    .action(() => {
-        listTasks();
+program.command("ls [category]")
+    .action((category) => {
+        listTasks(category);
     });
 
 program.command("check [index]")
