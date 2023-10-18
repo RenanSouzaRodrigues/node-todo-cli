@@ -1,6 +1,13 @@
 # Node Todo Cli
 
 This app is very basic and just need the following to work:
+- create a file at the root folder of the application with the name: `database.json`;
+- put the following content inside:
+```
+{ "tasks": [] }
+```
+- Run the following commands:
+
 ```
 npm install (or whatever you're using)
 
