@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require("fs");
-const { resolve, dirname, join } = require("path");
+const { dirname, join } = require("path");
 const { program } = require("commander");
 
 const getDB = () => {
